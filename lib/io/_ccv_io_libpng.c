@@ -17,6 +17,7 @@ static void _ccv_read_png_fd(FILE* in, ccv_dense_matrix_t** x, int type)
 	if (im == 0)
 		*x = im = ccv_dense_matrix_new((int) height, (int) width, (type) ? type : CCV_8U | (((color_type & PNG_COLOR_MASK_COLOR) == PNG_COLOR_TYPE_GRAY) ? CCV_C1 : CCV_C3), 0, 0);
 
+	png_set_strip_16(png_ptr);
 	png_set_strip_alpha(png_ptr);
 	if (color_type == PNG_COLOR_TYPE_PALETTE)
 		png_set_palette_to_rgb(png_ptr);
@@ -41,6 +42,7 @@ static void _ccv_read_png_fd(FILE* in, ccv_dense_matrix_t** x, int type)
 
 static void _ccv_write_png_fd(ccv_dense_matrix_t* mat, FILE* fd, void* conf)
 {
+	assert(CCV_GET_DATA_TYPE(mat->type) == CCV_8U && (CCV_GET_CHANNEL(mat->type) == CCV_C1 || CCV_GET_CHANNEL(mat->type) == CCV_C3));
 	png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
 	png_infop info_ptr = png_create_info_struct(png_ptr);
 	if (setjmp(png_jmpbuf(png_ptr)))

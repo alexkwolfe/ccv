@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [ `uname` == "Darwin" ] ; then
+  IS_OSX=true
+fi
+
 if [ "$1" = "force" ] ; then
 	rm -f .CC .DEF .LN
 fi
@@ -32,7 +36,7 @@ else
 	read -n 1 yn ; if [ ! -z $yn ] ; then echo ; fi
 	case $yn in
 	[nN]* ) ;;
-	*	  ) CFLAGS="$CFLAGS-msse2 "
+	*	  ) CFLAGS="$CFLAGS-msse2 -D HAVE_SSE2 "
 			;;
 	esac
 	echo -ne "  With \033[4mlibjpeg\033[m [Y/n] ? "
@@ -49,6 +53,10 @@ else
 	[nN]* ) ;;
 	*	  ) CFLAGS="$CFLAGS-D HAVE_LIBPNG "
 			LDFLAGS="$LDFLAGS-lpng -lz "
+      if [[ $IS_OSX ]] ; then
+        CFLAGS="$CFLAGS-I/usr/X11/include "
+        LDFLAGS="$LDFLAGS-L/usr/X11/lib "
+      fi
 			;;
 	esac
 	echo -ne "  With \033[4mgsl\033[m [Y/n] ? "
@@ -89,6 +97,30 @@ else
 	case $yn in
 	[yY]* ) CFLAGS="$CFLAGS-D USE_OPENMP -fopenmp "
 			LDFLAGS="$LDFLAGS-lgomp "
+			;;
+	*	  ) ;;
+	esac
+	echo -ne "  With \033[4mavcodec\033[m [y/N] ? "
+	read -n 1 yn ; if [ ! -z $yn ] ; then echo ; fi
+	case $yn in
+	[yY]* ) CFLAGS="$CFLAGS-D HAVE_AVCODEC "
+			LDFLAGS="$LDFLAGS-lavcodec "
+			;;
+	*	  ) ;;
+	esac
+	echo -ne "  With \033[4mavformat\033[m [y/N] ? "
+	read -n 1 yn ; if [ ! -z $yn ] ; then echo ; fi
+	case $yn in
+	[yY]* ) CFLAGS="$CFLAGS-D HAVE_AVFORMAT "
+			LDFLAGS="$LDFLAGS-lavformat "
+			;;
+	*	  ) ;;
+	esac
+	echo -ne "  With \033[4mswscale\033[m [y/N] ? "
+	read -n 1 yn ; if [ ! -z $yn ] ; then echo ; fi
+	case $yn in
+	[yY]* ) CFLAGS="$CFLAGS-D HAVE_SWSCALE "
+			LDFLAGS="$LDFLAGS-lswscale "
 			;;
 	*	  ) ;;
 	esac

@@ -281,6 +281,7 @@ static void _ccv_read_jpeg_fd(FILE* in, ccv_dense_matrix_t** x, int type)
 
 static void _ccv_write_jpeg_fd(ccv_dense_matrix_t* mat, FILE* fd, void* conf)
 {
+	assert(CCV_GET_DATA_TYPE(mat->type) == CCV_8U && (CCV_GET_CHANNEL(mat->type) == CCV_C1 || CCV_GET_CHANNEL(mat->type) == CCV_C3));
 	struct jpeg_compress_struct cinfo;
 	struct ccv_jpeg_error_mgr_t jerr;
 	jpeg_create_compress(&cinfo);
